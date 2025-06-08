@@ -84,14 +84,14 @@ pid_in_output () {
     return 0
 }
 trap exit TERM
-set -x
+
 pids=$(pgrep zathura)
 for pid in $pids; do
-    # s|(-c[[:space:]]+)/home/[^[:space:]]+|\1$newval|"
+    # replace the -c option and potentially reapply quotes around -x option
     cmd=$(ps -p $pid -o cmd=)
     newcmd=$(echo "$cmd" | awk -v config_dir="$ZATHURA_CONFIG_DIR" -v arg1="$1" '{gsub(/-c[[:space:]]+\/home\/[^[:space:]]+/, "-c " config_dir arg1); print}')
     newcmd=$(echo $newcmd | sed -E "s|(-x )(.*)|\1\"\2\"|")
-    echo $newcmd > /home/air_berlin/OtherPrograms/zathura-scripts/log
+
     if [[ $DWM = 1 ]]; then
         wmctrl_output=$(wmctrl -l -p -G | dwm_discard_windows_on_other_workspaces)
         if [[ $(echo $wmctrl_output | pid_in_output $pid) = 0 ]]; then
@@ -103,12 +103,14 @@ for pid in $pids; do
         echo $location
         active_window=$(xdotool getactivewindow)
     fi
+
     kill $pid
     eval $newcmd &
+
     if [[ $DWM = 1 ]]; then
         sleep 0.2  # hope zathura created a window by now
         echo $loc
-        put_window_on_master $loc
+        put_window_on_master $loc # this should not be quoted
         xdotool windowactivate $active_window
     fi
 done
