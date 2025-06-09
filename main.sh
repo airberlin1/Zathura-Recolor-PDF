@@ -4,8 +4,8 @@ ZATHURA_CONFIG_DIR="$HOME/.config/zathura/"
 HYPRLAND_JSON_FILE="$ZATHURA_CONFIG_DIR/hypr.json"
 
 # set to 1 for the window manager you use
-DWM=0 # recolor zathura windows on current tag
-HYPRLAND=1 # recolor all zathura windows
+DWM=1 # recolor zathura windows on current tag
+HYPRLAND=0 # recolor all zathura windows
 
 
 dwm_discard_windows_on_other_workspaces () {
@@ -47,11 +47,15 @@ dwm_get_stack_location () {
     # sort the windows in such a way that the bottom left comes first
     # important for preserving the order of the other windows
     # when pushing the new zathura window back in
-    for (( i=1; i<line_amount - 1; i++ )); do
-        for (( j=1; j<line_amount - i - 1; j++)); do
+    for (( i=0; i<line_amount - 1; i++ )); do
+        for (( j=0; j<line_amount - 1; j++)); do
             read -ra words1 <<< "${lines[j]}"
             read -ra words2 <<< "${lines[j+1]}"
-            if [[ "${words2[3]}" -gt "${words1[3]}" || ("${words2[3]}" -eq "${words1[3]}" && "${words2[4]}" -gt "${words1[4]}") ]]; then
+            if [[ "${words2[3]}" -gt "${words1[3]}" ]]; then
+                temp=${lines[$j]}
+                lines[j]=${lines[$j+1]}
+                lines[j+1]=$temp
+            elif [[ "${words2[3]}" -eq "${words1[3]}" && "${words2[4]}" -gt "${words1[4]}" ]]; then
                 temp=${lines[$j]}
                 lines[j]=${lines[$j+1]}
                 lines[j+1]=$temp
@@ -63,9 +67,9 @@ dwm_get_stack_location () {
     for line in "${lines[@]}"; do
         read -ra words <<< "$line"
         if [[ "${words[3]}" -lt "$locx" ]]; then
-            printf "\"%s\"\n" "${words[0]}"
+            printf "%s\n" "${words[0]}"
         elif [[ "${words[3]}" -eq "$locx"  && "${words[4]}" -lt "$locy" ]]; then
-            printf "\"%s\"\n" "${words[0]}"
+            printf "%s\n" "${words[0]}"
         fi
     done
 }
