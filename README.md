@@ -6,10 +6,13 @@ This script takes 1 argument: The relative path to the directory containing the 
 
 The script restarts all zathura files (or on current tag, see dwm), and when they were started with the -c option, it overwrites it to the one specified. In supported Window Managers, it tries to sort zathura back into the previous location.
 
+When starting zathura, use full paths as relative paths will most likely break when using this script.
+
 ### Supported Window Managers
 - [dwm](https://dwm.suckless.org/)
+- [Hyprland](https://hyprland.org/)
 
-When starting zathura, use full paths as relative paths will most likely break when using this script.
+It should be relatively easy to adapt basic usage to other x based window managers following the dwm implementation. Mainly the moving back of the window to it's original location could be very different, but I have not tried that.
 
 ## With DWM
 This script will only affect windows on the current tag.
@@ -18,11 +21,20 @@ It is recommended to use the [focusonnetactive](https://dwm.suckless.org/patches
 
 Set the option `DWM=1`.
 
-### Known Issues
-When used with dwm, the windows that are on top of a zathura window might get put in a different order with this script
+### Dependencies
+- `xdotool`
+- `wmctrl`
 
 ## With Hyprland
-In development
+
+Set the option `HYPRLAND=1`.
+
+### Dependencies
+- `hyprctl`
+- `jq`
+
+### Known issues
+While the zathura windows should be moved back to their original location, the tiling in the workspace might not be preserved for complicated tiling layouts
 
 ## With Emacs
 Cycling through emacs themes should automatically apply colors to opened pdf files for more colorful study. If you want to use it in a similar way, here are some suggestions:
